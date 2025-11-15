@@ -11,8 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
-.file.html
+file.html
 .env
+test.js
+dummyData.js
+apitest.js
+oneMovieData.js
 
 # Editor directories and files
 .vscode/*

@@ -1,7 +1,6 @@
 import React from "react";
 import { useFavContext } from "../context/FavContext";
-import MovieCard from "../components/MovieCard";
-
+import {MovieCard} from "../components/index.js"
 function Favs() {
   const { favList } = useFavContext();
 

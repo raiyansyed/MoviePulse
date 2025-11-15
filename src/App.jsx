@@ -1,9 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Favs from "./pages/Favs";
-import NavBar from "./components/NavBar";
 import { FavProvider } from "./context/FavContext";
-
+import {MovieDetails, NavBar} from './components/index.js'
 function App() {
   return (
     <FavProvider>
@@ -12,6 +11,7 @@ function App() {
         <Routes>
           <Route index element={<Home />} />
           <Route path="/favorites" element={<Favs />} />
+          <Route path="/movie/:id" element={<MovieDetails/>} />
         </Routes>
       </main>
     </FavProvider>

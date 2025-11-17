@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useFavContext } from "../context/FavContext";
 import { useNavigate } from "react-router-dom";
 

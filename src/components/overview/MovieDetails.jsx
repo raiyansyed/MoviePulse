@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFavContext } from "../../context/FavContext";
 import { getMovieDetails } from "../../service/api";
-import {MovieCast } from '../index.js'
+import { MovieCast } from "../index.js";
+import { searchYouTubeTrailer } from "../../service/youtubeSearch.js";
 import "./buttonAnimation.css";
 
 function MovieDetails() {
@@ -13,17 +14,25 @@ function MovieDetails() {
   const [error, setError] = useState(null);
   const { addTofavs, removeFromfavs, isFav } = useFavContext();
   const [isClicked, setIsClicked] = useState(false);
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [trailerLoading, setTrailerLoading] = useState(false);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
         const data = await getMovieDetails(id);
         setMovie(data);
+
+        setTrailerLoading(true);
+        const ytVideoKey = await searchYouTubeTrailer(data.title);
+        setTrailerKey(ytVideoKey);
+
       } catch (error) {
         console.error(error);
         setError("Failed to load Movie Details...");
       } finally {
         setLoading(false);
+        setTrailerLoading(false);
       }
     };
     fetchMovieDetails();
@@ -57,7 +66,9 @@ function MovieDetails() {
 
   const movieCast = movie.credits.cast;
   const sortedMovieCast = movieCast.sort((a, b) => b.popularity - a.popularity);
-  console.log(sortedMovieCast);
+
+  const relatedSiteName = movie.homepage ? movie.homepage.split(".")[1] : null;
+
 
   return (
     <div className="relative min-h-screen">
@@ -67,7 +78,7 @@ function MovieDetails() {
           style={{ backgroundImage: `url(${backgroundImage})` }}
         />
       )}
-
+      {/* Back button */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
         <button
           onClick={() => navigate(-1)}
@@ -130,6 +141,42 @@ function MovieDetails() {
               </span>
             </button>
 
+            {/* Trailer */}
+            {trailerLoading && (<div className="mb-6">
+              <h2 className="font-semibold mb-2 text-2xl">Trailer</h2>
+              <p className="text-gray-400">Loading trailer...</p>
+            </div>)}
+            {!trailerLoading && trailerKey && (
+              <div className="mb-6">
+                <h2 className="font-semibold mb-2 text-2xl">Trailer</h2>
+                <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+                <iframe 
+                  title={`${movie.title} Trailer`}
+                  src={`https://www.youtube.com/embed/${trailerKey}`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+                </div>
+              </div>
+            )}
+
+            {/* Related Sites */}
+            {movie.homepage && relatedSiteName && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-2 text-2xl">Related sites</h3>
+                <a
+                  href={movie.homepage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1 bg-[#403963] rounded-full text-sm"
+                >
+                  {relatedSiteName}
+                </a>
+              </div>
+            )}
+
             {/* Genres */}
             <div className="mb-6">
               <h2 className="font-semibold mb-2 text-2xl">Generes</h2>
@@ -137,7 +184,7 @@ function MovieDetails() {
                 {movie.genres?.map((genre) => (
                   <span
                     key={genre.id}
-                    className="px-3 py-1 bg-[#403963] rounded-full text-sm"
+                    className="px-3 py-1 bg-[#403963] rounded-full text-sm cursor-default"
                   >
                     {genre.name}
                   </span>
@@ -151,20 +198,26 @@ function MovieDetails() {
               <p className="text-lg mb-3">{movie.overview}</p>
             </div>
             {/* Languages Spoken */}
-            {movie.spoken_languages && movie.spoken_languages.length > 0 &&(<div className="mb-6">
-              <h2 className="font-semibold mb-2 text-2xl">Languages Spoken in Movie</h2>
-              <div className="flex flex-wrap gap-2">
-                {movie.spoken_languages.map(lan => (
-                <div className="px-3 py-1 text-sm rounded-full bg-[#403963]">{lan.english_name}</div>
-              ))}
+            {movie.spoken_languages && movie.spoken_languages.length > 0 && (
+              <div className="mb-6">
+                <h2 className="font-semibold mb-2 text-2xl">
+                  Languages Spoken in Movie
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {movie.spoken_languages.map((lan) => (
+                    <div className="px-3 py-1 text-sm rounded-full bg-[#403963] cursor-default" key={lan.iso_639_1}>
+                      {lan.english_name}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>)}
+            )}
             {/* Movie Cast */}
             {movie.credits?.cast && movie.credits.cast.length > 0 && (
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Top Cast</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  <MovieCast movieCast={sortedMovieCast}/>
+                  <MovieCast movieCast={sortedMovieCast} />
                 </div>
               </div>
             )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useFavContext } from "../../context/FavContext";
 import { getMovieDetails } from "../../service/api";
 import { MovieCast } from "../index.js";
@@ -9,6 +9,7 @@ import "./buttonAnimation.css";
 function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,24 +20,40 @@ function MovieDetails() {
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
+      setTrailerLoading(true); // start loading
       try {
         const data = await getMovieDetails(id);
         setMovie(data);
 
-        setTrailerLoading(true);
-        const ytVideoKey = await searchYouTubeTrailer(data.title);
-        setTrailerKey(ytVideoKey);
+        // Prefer TMDB's YouTube trailers (free, no YouTube quota)
+        const videos = data.videos?.results || [];
+        const tmdbTrailer =
+          videos.find(v => v.site === "YouTube" && v.type === "Trailer") ||
+          videos.find(v => v.site === "YouTube" && v.type === "Teaser") ||
+          videos.find(v => v.site === "YouTube");
 
+        if (tmdbTrailer) {
+          setTrailerKey(tmdbTrailer.key); // fix: was trailer.key
+        } else {
+          // Fallback to YouTube search (uses quota; cached in localStorage)
+          const ytKey = await searchYouTubeTrailer(data.title, data.id);
+          setTrailerKey(ytKey);
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching movie details:", error);
         setError("Failed to load Movie Details...");
       } finally {
-        setLoading(false);
         setTrailerLoading(false);
+        setLoading(false);
       }
     };
     fetchMovieDetails();
   }, [id]);
+
+  const handleBackClick = () => {
+    const from = location.state?.from || "/";
+    navigate(from, { state: { ...location.state } });
+  };
 
   if (loading) {
     return (
@@ -48,7 +65,7 @@ function MovieDetails() {
 
   if (error || !movie) {
     return (
-      <div className="flex justify-center items-center min-h-screen`">
+      <div className="flex justify-center items-center min-h-screen">
         <p className="text-2xl text-red-500">{error || "Movie not found"}</p>
       </div>
     );
@@ -69,7 +86,6 @@ function MovieDetails() {
 
   const relatedSiteName = movie.homepage ? movie.homepage.split(".")[1] : null;
 
-
   return (
     <div className="relative min-h-screen">
       {backgroundImage && (
@@ -81,7 +97,7 @@ function MovieDetails() {
       {/* Back button */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleBackClick}
           className="mb-6 px-4 py-2 rounded-lg transition bg-[#403963] hover:bg-[#524a7a] hover:cursor-pointer"
         >
           ← Back
@@ -92,7 +108,7 @@ function MovieDetails() {
             {posterImage ? (
               <img
                 src={posterImage}
-                alt="movie.title"
+                alt={movie.title}
                 className="w-full md:w-80 rounded-lg shadow-2xl"
               />
             ) : (
@@ -142,23 +158,31 @@ function MovieDetails() {
             </button>
 
             {/* Trailer */}
-            {trailerLoading && (<div className="mb-6">
-              <h2 className="font-semibold mb-2 text-2xl">Trailer</h2>
-              <p className="text-gray-400">Loading trailer...</p>
-            </div>)}
+            {trailerLoading && (
+              <div className="mb-6">
+                <h2 className="font-semibold mb-2 text-2xl">Trailer</h2>
+                <p className="text-gray-400">Loading trailer...</p>
+              </div>
+            )}
             {!trailerLoading && trailerKey && (
               <div className="mb-6">
                 <h2 className="font-semibold mb-2 text-2xl">Trailer</h2>
                 <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                <iframe 
-                  title={`${movie.title} Trailer`}
-                  src={`https://www.youtube.com/embed/${trailerKey}`}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
+                  <iframe
+                    title={`${movie.title} Trailer`}
+                    src={`https://www.youtube.com/embed/${trailerKey}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
                 </div>
+              </div>
+            )}
+            {!trailerLoading && !trailerKey && (
+              <div className="mb-6">
+                <h2 className="font-semibold mb-2 text-2xl">Trailer</h2>
+                <p className="text-gray-400">No trailer available</p>
               </div>
             )}
 
@@ -170,7 +194,7 @@ function MovieDetails() {
                   href={movie.homepage}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1 bg-[#403963] rounded-full text-sm"
+                  className="px-3 py-1 bg-[#403963] rounded-full text-sm hover:bg-[#524a7a] transition"
                 >
                   {relatedSiteName}
                 </a>
@@ -179,7 +203,7 @@ function MovieDetails() {
 
             {/* Genres */}
             <div className="mb-6">
-              <h2 className="font-semibold mb-2 text-2xl">Generes</h2>
+              <h2 className="font-semibold mb-2 text-2xl">Genres</h2>
               <div className="flex flex-wrap gap-2">
                 {movie.genres?.map((genre) => (
                   <span
@@ -193,7 +217,7 @@ function MovieDetails() {
             </div>
 
             {/* Overview */}
-            <div>
+            <div className="mb-6">
               <h2 className="font-semibold mb-2 text-2xl">Overview</h2>
               <p className="text-lg mb-3">{movie.overview}</p>
             </div>
@@ -205,7 +229,10 @@ function MovieDetails() {
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {movie.spoken_languages.map((lan) => (
-                    <div className="px-3 py-1 text-sm rounded-full bg-[#403963] cursor-default" key={lan.iso_639_1}>
+                    <div
+                      className="px-3 py-1 text-sm rounded-full bg-[#403963] cursor-default"
+                      key={lan.iso_639_1}
+                    >
                       {lan.english_name}
                     </div>
                   ))}

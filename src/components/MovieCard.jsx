@@ -1,17 +1,26 @@
 import { useFavContext } from "../context/FavContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, currentPage, totalCount }) {
   const { addTofavs, removeFromfavs, isFav } = useFavContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const release = movie.release_date;
   const image = `https://image.tmdb.org/t/p/w500/${movie.poster_path}`;
   const fav = isFav(movie.id);
 
-const handleCardClick = () => {
-  navigate(`/movie/${movie.id}`);
-}
+  const handleCardClick = () => {
+    const scrollPosition = window.scrollY;
+    navigate(`/movie/${movie.id}`, {
+      state: {
+        from: location.pathname + location.search,
+        scrollPosition,
+        page: currentPage,
+        totalCount
+      }
+    });
+  };
 
   return (
     <div onClick={handleCardClick}>
@@ -39,8 +48,8 @@ const handleCardClick = () => {
               }}
               className={`border border-gray-600 rounded-full w-8 h-8 absolute top-2 right-2 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100 group-hover:pointer-events-auto ${
                 fav ? "bg-red-600" : "bg-gray-800"
-              }`}
-              aria-label="Add to favorites"
+              } z-10`}
+              aria-label={fav ? "Remove from favorites" : "Add to favorites"}
             >
               ♥
             </button>

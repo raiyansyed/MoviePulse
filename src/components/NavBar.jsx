@@ -105,14 +105,14 @@ function NavBar() {
         {/* Center: Search (desktop) */}
         <form
           onSubmit={handleSubmit}
-          className="hidden md:flex items-center gap-2 text-sm text-(--muted) border border-(--border) rounded-full px-4 py-2 flex-1 relative"
+          className="flex items-center gap-2 text-sm text-(--muted) border border-(--border) rounded-full px-4 py-2 flex-1 sm:px-4 relative"
         >
           <input
             type="text"
             value={searchQuery}
             onChange={handleInputChange}
             placeholder="Search movies"
-            className="flex-1 bg-transparent outline-none text-(--text)placeholder:text-(--muted)"
+            className="flex-1 bg-transparent outline-none text-(--text) placeholder:text-(--muted)"
           />
           <button
             type="submit"
@@ -166,39 +166,6 @@ function NavBar() {
             <span className="sr-only">Toggle theme</span>
           </label>
         </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="flex items-center gap-2 text-sm text-(--muted) border border-(--border) rounded-full px-4 py-2 relative ml-auto"
-        >
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleInputChange}
-            placeholder="Search movies"
-            className="flex-1 bg-transparent outline-none text-(--text)placeholder:text-(--muted)"
-          />
-          <button
-            type="submit"
-            className="text-(--text) font-medium cursor-pointer"
-          >
-            Go
-          </button>
-          {showSuggestions && suggestions.length > 0 && (
-            <ul className="absolute top-full left-0 right-0 mt-2 bg-(--card) border border-(--border) rounded-lg shadow max-h-60 overflow-y-auto text-(--text) z-20">
-              {suggestions.map((s, i) => (
-                <li key={i}>
-                  <button
-                    onClick={() => handleSuggestionClick(s)}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-(--border)/40 transition-colors"
-                  >
-                    {s}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </form>
 
         {/* Mobile hamburger */}
         <button

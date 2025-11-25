@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 // The client gets the API key from the environment variable `GEMINI_API_KEY`.
 
-const apiKey=String(import.meta.env.VITE_GEMINI_API_KEY);
+const apiKey = String(import.meta.env.VITE_GEMINI_API_KEY);
 
 const ai = new GoogleGenAI({ apiKey });
 
@@ -56,7 +56,9 @@ STRICT RULES:
 
 7. Prefer at least 30% lesser-known movies unless impossible.
 
-8. If constraints cannot be fully met, relax minimally but still return the closest valid recommendations.
+8. If description is given then strictly recommend the movies which match the description 
+
+9. If constraints cannot be fully met, relax minimally but still return the closest valid recommendations.
 
 OUTPUT FORMAT EXAMPLE:
 [
@@ -72,15 +74,15 @@ OUTPUT FORMAT EXAMPLE:
   });
 
   const text = response.text
-  .replace(/```json/g, "")
-  .replace(/```/g, "")
-  .trim();
+    .replace(/```json/g, "")
+    .replace(/```/g, "")
+    .trim();
 
   // Attempt parse; fall back to raw text
   try {
     return JSON.parse(text);
   } catch {
-    console.error("Json parse Error")
+    console.error("Json parse Error");
     return null;
   }
 }

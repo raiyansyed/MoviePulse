@@ -144,7 +144,7 @@ function Recommendations() {
   ];
 
   return !selection ? (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-16">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-muted">
@@ -174,7 +174,7 @@ function Recommendations() {
       )}
     </div>
   ) : (
-    <div className="surface-card border border-(--border) rounded-2xl p-6 sm:p-8">
+    <div className="mt-16 surface-card border border-(--border) rounded-2xl p-6 sm:p-8">
       <form className="space-y-8" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold text-(--text)">

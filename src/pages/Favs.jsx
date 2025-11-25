@@ -8,7 +8,7 @@ function Favs() {
 
   if (favList.length === 0) {
     return (
-      <section className="surface-card border border-(--border) rounded-2xl p-8 text-center space-y-4">
+      <section className="mt-16 surface-card border border-(--border) rounded-2xl p-8 text-center space-y-4">
         <h2 className="text-2xl font-semibold text-(--text)">No favorites yet</h2>
         <p className="text-muted">
           Save movies you like and they&apos;ll appear in this list.
@@ -24,7 +24,7 @@ function Favs() {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 mt-16">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-muted">

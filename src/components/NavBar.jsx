@@ -91,7 +91,7 @@ function NavBar() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-(--border) bg-(--card) text-(--text) mx-2 my-2 rounded-2xl">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-(--border) bg-(--card) text-(--text) mx-2 my-1 rounded-2xl">
       <div className="max-w-7xl mx-auto h-16 px-4 sm:px-8 flex items-center gap-6">
         {/* Left: Logo */}
         <Link

@@ -5,6 +5,7 @@ import { getMovieDetails } from "../../service/api";
 import { MovieCast } from "../index.js";
 import { searchYouTubeTrailer } from "../../service/youtubeSearch.js";
 import "./buttonAnimation.css";
+import Movie from "./Movie.jsx";
 
 function MovieDetails() {
   const { id } = useParams();
@@ -17,6 +18,7 @@ function MovieDetails() {
   const [isClicked, setIsClicked] = useState(false);
   const [trailerKey, setTrailerKey] = useState(null);
   const [trailerLoading, setTrailerLoading] = useState(false);
+  const [playMovie, setPlayMovie] = useState(false);
 
   const backgroundImage = movie?.backdrop_path
     ? `https://image.tmdb.org/t/p/original/${movie.backdrop_path}`
@@ -184,6 +186,55 @@ function MovieDetails() {
         </div>
 
         <div className="space-y-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Watch Movie</h2>
+              {!playMovie && (
+                <button
+                  onClick={() => {
+                    setPlayMovie(true);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-full px-6 py-3 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                  </svg>
+                  Play Movie
+                </button>
+              )}
+            </div>
+            {playMovie && (
+              <div className="relative w-full rounded-2xl overflow-hidden border border-(--border) bg-black">
+                <button
+                  onClick={() => setPlayMovie(false)}
+                  className="absolute top-4 right-4 z-20 bg-black/70 hover:bg-black/90 text-white rounded-full p-2 transition-all duration-200 hover:scale-110"
+                  aria-label="Close movie player"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+                <Movie id={id} />
+              </div>
+            )}
+          </div>
           <h2 className="text-lg font-semibold">Trailer</h2>
           {trailerLoading && <p className="text-muted">Loading trailer…</p>}
           {!trailerLoading && trailerKey && (

@@ -9,7 +9,7 @@ function Movie({id}) {
         height="100%"
         frameBorder="0"
         allowFullScreen
-        className="w-full h-full min-h-[600px]"
+        className="w-full h-full min-h-150"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         title="Movie Player"
       ></iframe>

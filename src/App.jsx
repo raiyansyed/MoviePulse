@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Favs from "./pages/Favs";
 import { FavProvider } from "./context/FavContext";
 import { MovieDetails, NavBar, Recommendations } from "./components/index.js";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   return (

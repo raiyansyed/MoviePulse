@@ -9,6 +9,7 @@ A fast movie browser built with React, Vite, and TailwindCSS. Search with sugges
 
 ## Features
 
+### ✅ Movies (Fully Functional)
 - 🔍 Search with typeahead suggestions (always visible, responsive, debounced, uses TMDB `/search/movie`)
 - ♾️ Infinite scrolling (Intersection Observer)
 - 📄 Movie details: overview, genres, spoken languages, and top cast
@@ -17,11 +18,17 @@ A fast movie browser built with React, Vite, and TailwindCSS. Search with sugges
   - Fallback to YouTube search (optional) with LocalStorage caching
 - ⭐ Favorites (persisted in LocalStorage)
 - ↩️ Back-navigation scroll restoration
+- 🏎️ Debounced and cached API requests for suggestions (prevents rate limit exhaustion)
+
+### 🔄 Web Series (In Development)
+- Web series search and filtering coming soon
+- Currently working on integrating TMDB TV shows API
+
+### General Features
 - 🌙 Modern dark UI with TailwindCSS, fully responsive
 - 🌓 Theme toggle (light/dark, persists in localStorage)
 - 📱 Responsive NavBar: logo left, search center, links/theme right, hamburger toggles links/theme on mobile
 - 🧹 No gaps for movies without posters (cards filtered out)
-- 🏎️ Debounced and cached API requests for suggestions (prevents rate limit exhaustion)
 
 ---
 
